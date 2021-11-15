@@ -6,12 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Fade/Scene/SampleFadeA.unity
+    path: Assets/Scenes/TitleScene.unity
     guid: abcd93e81d996ad4685b18b32ba71d0e
   - enabled: 1
-    path: Assets/Scenes/Fade/Scene/SampleFadeB.unity
+    path: Assets/Scenes/PlayScene.unity
     guid: e1bda5e6e69489f44856481b83a3e57c
-  - enabled: 1
-    path: Assets/Scenes/Fade/Scene/SampleFadeC.unity
+  - enabled: 0
+    path: Assets/Scenes/SampleFadeC.unity
     guid: f1853d2d80aca924788189232720ce9c
   m_configObjects: {}
