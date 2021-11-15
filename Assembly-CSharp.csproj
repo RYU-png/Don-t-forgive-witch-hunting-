@@ -74,6 +74,7 @@
     <Compile Include="Assets\CommonScripts\Fade\IFade.cs" />
     <Compile Include="Assets\CommonScripts\GameManager.cs" />
     <Compile Include="Assets\CommonScripts\SingletonMonoBehaviour.cs" />
+    <Compile Include="Assets\SceneScripts\Loading\LoadingManager.cs" />
     <Compile Include="Assets\SceneScripts\Play\PlayManager.cs" />
     <Compile Include="Assets\SceneScripts\Title\TitleManager.cs" />
     <None Include="Assets\Shaders\TextureFadeAlpha.shader" />

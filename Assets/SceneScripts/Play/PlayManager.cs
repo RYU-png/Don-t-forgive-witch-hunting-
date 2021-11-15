@@ -16,7 +16,7 @@ public class PlayManager : MonoBehaviour
         // Escでタイトルへ
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            FadeManager.Instance.LoadScene(SceneName.title);
+            GameManager.Instance.NextScene(SceneName.title);
         }
     }
 }

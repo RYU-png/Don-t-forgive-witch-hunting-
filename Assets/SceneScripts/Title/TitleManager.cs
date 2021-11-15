@@ -16,7 +16,7 @@ public class TitleManager : MonoBehaviour
         // Spaceでプレイへ
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            FadeManager.Instance.LoadScene(SceneName.play);
+            GameManager.Instance.NextScene(SceneName.play);
         }
     }
 }

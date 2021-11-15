@@ -25,16 +25,35 @@ public struct SceneName
 }
 
 
-public class GameManager : MonoBehaviour
+public class GameManager : SingletonMonoBehaviour<GameManager>
 {
     // Start is called before the first frame update
     void Start()
     {
+        // シーンのロードで削除されないようにする
+        DontDestroyOnLoad(this.gameObject);
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    // 次のシーンへ遷移する関数
+    public void NextScene(string name)
+    {
+        // フェードイン
+        FadeManager.Instance.FadeIn(() =>
+        {
+            // フェードイン完了後、ロード開始
+            LoadingManager.Instance.StartLoading(name, () =>
+             {
+                 // ロード完了後、フェードアウト
+                 FadeManager.Instance.FadeOut(() =>
+                 {
+                 });
+             });
+        });
     }
 }
