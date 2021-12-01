@@ -75,6 +75,7 @@
     <Compile Include="Assets\CommonScripts\GameManager.cs" />
     <Compile Include="Assets\CommonScripts\SingletonMonoBehaviour.cs" />
     <Compile Include="Assets\SceneScripts\Loading\LoadingManager.cs" />
+    <Compile Include="Assets\SceneScripts\Play\Character\CharacterScript.cs" />
     <Compile Include="Assets\SceneScripts\Play\PlayManager.cs" />
     <Compile Include="Assets\SceneScripts\Title\TitleManager.cs" />
     <None Include="Assets\Shaders\TextureFadeAlpha.shader" />
@@ -633,6 +634,12 @@
     </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>C:/Users/SystemSetupAccount/Documents/Github/Traniversport/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Cinemachine">
+      <HintPath>C:/Users/SystemSetupAccount/Documents/Github/Traniversport/Library/ScriptAssemblies/Cinemachine.dll</HintPath>
+    </Reference>
+    <Reference Include="com.unity.cinemachine.editor">
+      <HintPath>C:/Users/SystemSetupAccount/Documents/Github/Traniversport/Library/ScriptAssemblies/com.unity.cinemachine.editor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup></ItemGroup>
