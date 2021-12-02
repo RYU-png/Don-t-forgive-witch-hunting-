@@ -4,23 +4,6 @@ using UnityEngine;
 
 public class CharacterScript : MonoBehaviour
 {
-    /// <summary>
-    /// 入力にて使用するキー・ボタン
-    /// </summary>
-    enum eKeyInput
-    {
-        NONE = -1,
-
-        W,
-        D,
-        S,
-        A,
-        SPACE,
-        SHIFT,
-
-        INPUT_NUM,
-    }
-
     enum eJumpState
     {
         NONE = -1,
@@ -31,25 +14,27 @@ public class CharacterScript : MonoBehaviour
         STATE_NUM,
     }
 
+
     [SerializeField]
     private Rigidbody rb;
 
-    private Vector3 vel;
+    [SerializeField]
+    private Camera cam;
+
+    private Vector3 moveVec;
     private float speed;
 
-    private const float walkSpeed = 10.0f;
-    private const float dashSpeed = 15.0f;
-    private const float limitSpeed = 30.0f;
+    private const float walkSpeed = 2.0f;
+    private const float dashSpeed = 5.0f;
+    private const float limitWalkSpeed = 10.0f;
+    private const float limitWDashSpeed = 15.0f;
 
     private const float jumpForce= 10.0f;
     private const int limitJump = 50;
 
     private int jumpInput;
 
-    private float velX;
-    private float velZ;
-
-    private eKeyInput input;
+    private bool input;
     private eJumpState jumpState;
 
     // Start is called before the first frame update
@@ -60,8 +45,13 @@ public class CharacterScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(jumpInput);
-        Debug.Log(jumpState);
+        Debug.Log(cam.transform.forward);
+
+        // プレイヤー入力受付
+        PlayerInput();
+
+        // プレイヤー回転更新
+        PlayerRotate();
 
         // プレイヤー移動更新
         PlayerMove();
@@ -71,23 +61,62 @@ public class CharacterScript : MonoBehaviour
     }
 
     /// <summary>
-    /// プレイヤーの移動を管理する関数
+    /// プレイヤーの移動を行う関数
     /// </summary>
     private void PlayerMove()
     {
-        // 入力が無ければスキップ
-        if (!PlayerInput())
+        // 移動入力が無い場合スキップ
+        if (moveVec.x == 0
+            && moveVec.z == 0)
             return;
 
-        // 入力から速度を更新
-        vel = new Vector3(velX, 0, velZ);
-
         // プレイヤーを動かす
-        rb.AddForce(vel * speed);
+        //rb.AddForce(transform.forward * speed);
+        rb.velocity += transform.forward * speed;
     }
 
     /// <summary>
-    /// プレイヤーのジャンプを管理する関数
+    /// プレイヤーの回転を行う関数
+    /// </summary>
+    private void PlayerRotate()
+    {
+        Vector3 dir = Vector3.zero;
+
+        // 前
+        if (moveVec.z > 0)
+        {
+            dir += cam.transform.forward;
+        }
+        // 右
+        if (moveVec.x > 0)
+        {
+            dir += cam.transform.right;
+        }
+        // 後
+        if (moveVec.z < 0)
+        {
+            dir -= cam.transform.forward;
+        }
+        // 左
+        if (moveVec.x < 0)
+        {
+            dir -= cam.transform.right;
+        }
+
+        // カメラの傾きによるズレを修正
+        dir.y = 0.0f;
+
+        // 移動入力が無い場合スキップ
+        if (moveVec.x == 0
+            && moveVec.z == 0)
+            return;
+
+        // 滑らかに向きを変える
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir.normalized), 0.05f);
+    }
+
+    /// <summary>
+    /// プレイヤーのジャンプを行う関数
     /// </summary>
     private void PlayerJump()
     {
@@ -100,9 +129,9 @@ public class CharacterScript : MonoBehaviour
 
             // プレイヤーを動かす
             rb.AddForce(new Vector3(0, jumpForce, 0));
+            //rb.velocity += transform.up * jumpForce;
         }
     }
-
 
     /// <summary>
     /// プレイヤーの入力を管理する関数
@@ -110,43 +139,45 @@ public class CharacterScript : MonoBehaviour
     /// <returns></returns>
     private bool PlayerInput()
     {
+        // 初期化
+        input = false;
+
         if (Input.GetKey(KeyCode.W))
         {
-            velZ = 1.0f;
-            input = eKeyInput.W;
+            moveVec.z = 1.0f;
+            input = true;
         }
         else
         {
-            velZ = 0.0f;
+            moveVec.z = 0.0f;
         }
 
         if (Input.GetKey(KeyCode.D))
         {
-            velX = 1.0f;
-            input = eKeyInput.D;
+            moveVec.x = 1.0f;
+            input = true;
         }
         else
         {
-            velX = 0.0f;
+            moveVec.x = 0.0f;
         }
 
         if (Input.GetKey(KeyCode.S))
         {
-            velZ = -1.0f;
-            input = eKeyInput.S;
+            moveVec.z = -1.0f;
+            input = true;
         }
 
         if (Input.GetKey(KeyCode.A))
         {
-            velX = -1.0f;
-            input = eKeyInput.A;
+            moveVec.x = -1.0f;
+            input = true;
         }
 
         if (Input.GetKey(KeyCode.Space))
         {
-            input = eKeyInput.SPACE;
-
             jumpInput++;
+            input = true;
         }
         else
         {
@@ -159,22 +190,36 @@ public class CharacterScript : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftShift))
         {
             speed = dashSpeed;
-            input = eKeyInput.SHIFT;
+            input = true;
         }
         else
         {
             speed = walkSpeed;
         }
 
-        return input != eKeyInput.NONE;
+        return input;
     }
 
     private void FixedUpdate()
     {
         // 速度制限
-        if (rb.velocity.magnitude > limitSpeed)
+        //if (rb.velocity.magnitude > limitSpeed)
+        //{
+        //    rb.velocity = rb.velocity.normalized * limitSpeed;
+        //}
+
+        // XZ平面上での速度を計算
+        float magXZ = Mathf.Sqrt(rb.velocity.x * rb.velocity.x + rb.velocity.z * rb.velocity.z);
+
+        // 速度超過していた場合
+        if (magXZ > limitWalkSpeed)
         {
-            rb.velocity = rb.velocity.normalized * limitSpeed;
+            // 正規化処理をX,Zそれぞれ行う
+            float velX = rb.velocity.x / magXZ * limitWalkSpeed;
+            float velZ = rb.velocity.z / magXZ * limitWalkSpeed;
+
+            // Y以外の速度を調整
+            rb.velocity = new Vector3(velX, rb.velocity.y, velZ);
         }
     }
 
